@@ -1,0 +1,199 @@
+body {
+  width: 100%;
+  overflow-x: hidden;
+  margin-top: 5%;
+}
+
+.landing-page {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto;
+  grid-template-areas: "def";
+  /* background-color: beige; */
+  /* height: 560px; */
+  border-radius: 0px 0px 32px 32px;
+  /* background: url('/home/moringa/Desktop/phase_5/bluecart-marketplace/src/assets/lucrezia-carnelos-wQ9VuP_Njr4-unsplash.png'); */
+  background-size: cover;
+  object-fit: cover;
+  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+.carousel-text, .carousel-root{
+  grid-area: def;
+}
+
+.carousel-text{
+  z-index: 1000;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  /* top: 50%;
+  left: 50%; */
+  /* transform: translate(-50%, -50%); */
+  text-align: center;
+}
+
+.header {
+  text-align: center;
+  z-index: 1000000;
+}
+
+.carousel-text h1 {
+  width: 80%; 
+  /* height: 200px;  */
+  flex-shrink: 0;
+  color: #2D7AD4;
+  text-align: center;
+  font-family: 'Outfit';
+  font-size: 72px; 
+  font-style: normal;
+  font-weight: 700; 
+  line-height: 8rem;
+  /* margin-top: -15rem;
+ margin-bottom: 15%; */
+}
+
+.carousel-text p {
+  color: black;
+  text-align: center;
+  font-family: 'Outfit';
+  font-size: 20px; 
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  margin-bottom: 32px;
+  margin-top: 1.5rem;
+}
+.carousel-text button{
+  font-size: 1.5rem;
+  color: #fff;
+  width: 18rem;
+  background: #2d7ad4;
+  border: none;
+  height: 6rem;
+  /* margin-top: -9rem;
+  margin-left: 70rem; */
+  border-radius: 32px;
+}
+.carousel-text button a{
+  color: #FFF;
+}
+#search {
+  width: 487px; 
+  padding: 24px 32px;
+  font-family: 'Inter', sans-serif;
+  border-radius: 96px;
+  font-size: 14px;
+  border: 2px solid #2D7AD4;
+  background: #fefefe;
+  /* margin-top: -6rem; */
+  margin-bottom: 32px; 
+  outline-style: none;
+}
+
+.footer {
+  width: 100%; 
+  background: #FFF;
+  padding: 20px 0; 
+}
+
+.footer h2 {
+  width: 434px;
+  color: #000;
+  text-align: center;
+  font-family: 'Outfit';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 32px;
+  line-height: normal;
+  margin-bottom: 20px; 
+ margin-left: 39%;
+}
+
+.footer p{
+  color: black;
+  text-align: center;
+  font-family: 'Outfit';
+  font-size: 20px; 
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  margin-bottom: 48px;
+}
+.company-logos-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+ 
+}
+
+.company-logos {
+  display: flex;
+  flex-direction: row;
+  display: inline-block;
+  margin: 0px 32px;
+  height: 64px;
+}
+
+.logo {
+  display: inline-block;
+  padding: 0px 16px;
+}
+
+.footer img {
+  height: 64px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .carousel-text h1 {
+    position: relative;
+    font-size: 16px; 
+    line-height: normal;
+    top: 0;
+    margin-top: -47rem;
+  }
+  .page{
+    margin-top: 10rem;
+  }
+  .carousel-text p {
+    position: absolute;
+    font-size: 13px; 
+    margin-top: -33rem;
+    top: 0;
+  }
+  #search{
+    position: absolute;
+    top: 0;
+    margin-top: -27rem;
+    height: 5rem;
+    width: 25rem;
+  }
+  .carousel-text button {
+    position: absolute;
+    width: 15rem; 
+    margin-left: 50rem; 
+    margin-top: -47rem;
+  }
+
+  .footer h2 {
+    font-size: 16px; /* Adjust the font size for smaller screens */
+    margin-left: 10rem; /* Centered text on smaller screens */
+  }
+
+  .footer p {
+    font-size: 8px;
+    margin-top: 2rem; /* Adjust the font size for smaller screens */
+  }
+}
+
+
+
+
+
+
+

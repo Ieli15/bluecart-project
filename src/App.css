@@ -1,0 +1,501 @@
+* {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  box-sizing: border-box;
+  outline: none;
+  border: none;
+  text-decoration: none;
+  text-transform: capitalize;
+  transition: all 0.2s linear;
+}
+
+html {
+  font-size: 62.5%;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  scroll-padding-top: 7rem;
+}
+
+body {
+  background: #fff;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 12px 10%;
+  background: #fff;
+  cursor: pointer;
+  width: 100%;
+  /* height: 10rem; */
+  flex-wrap: wrap;
+}
+
+.header .logo {
+  align-items: center;
+  justify-content: center;
+}
+
+.header .logo i,
+.header .logo span {
+  font-size: 1.6rem;
+  color: #2d7ad4;
+}
+
+.header .logo span {
+  margin-left: 1rem;
+}
+
+.header .Links a {
+  font-size: 1.5rem;
+  padding: 1rem;
+  color: black;
+}
+
+.header .Links a:hover {
+  color: #2d7ad4;
+  transform: 0.5s;
+  text-decoration: underline;
+}
+.fa-bars{
+  font-size: 1.5rem;
+  display: none;
+}
+.hamburger{
+  display: none;
+}
+.show{
+  display: flex; 
+  flex-direction: column;
+  cursor: pointer;
+  padding: 10px;
+}
+.show a{
+  font-size: 1.5rem;
+  padding: 3rem;
+  color: black;
+}
+.show a:hover{
+  color: #2d7ad4;
+  transform: 0.5s;
+  text-decoration: underline;
+}
+.hamburger button{
+  margin: 1rem;
+  height: 4.5rem;
+  width: 9rem;
+  border-radius: 10px;
+  background: #2d7ad4;
+  color: #fff;
+  border: none;
+}
+.header .buttons button {
+  margin: 1rem;
+  height: 4.5rem;
+  width: 9rem;
+  border-radius: 48px;
+  background: #2d7ad4;
+  color: #fff;
+  border: none;
+}
+
+.form {
+  width: 35rem;
+  height: 38rem;
+  position: fixed;
+  top: 0;
+  right: -400px;
+  margin-right: 3rem;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  transition: right 0.3s ease-in-out;
+  z-index: 1000000000;
+  margin-top: 8rem;
+  padding: 16px;
+  border-radius: 12px;
+}
+
+.form h3 {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 2rem;
+  color: #2d7ad4;
+}
+
+.form.open {
+  right: 0;
+}
+
+.form p {
+  align-items: center;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.form p span {
+  color: #2d7ad4;
+}
+
+.form input {
+  width: 80%;
+  padding: 1rem;
+  margin-top: 2rem;
+  margin-left: 0;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+}
+.form2{
+  height: 30rem;
+}
+.form button {
+  font-size: 1.5rem;
+  color: #fff;
+  width: 18rem;
+  background: #2d7ad4;
+  border: none;
+  height: 4rem;
+  margin-top: 1rem;
+  margin-left: 0rem;
+  border-radius: 8px;
+}
+
+.page .layout {
+  margin-top: 10rem;
+  width: 100%;
+  background: #d9eaff;
+  padding-left: 43%;
+  padding-top: 14%;
+  color: #000;
+  font-family: Outfit;
+  font-size: 48px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.line {
+  font-weight: 400;
+  padding-left: 46%;
+}
+
+.page .profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2rem;
+
+}
+
+.page .profile h3 {
+  font-size: 2.5rem;
+}
+
+.page .profile form {
+  display: flex;
+  flex-direction: column;
+  width: 35rem;
+  height: 40rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  margin-top: 3rem;
+}
+
+.page .profile form input {
+  width: 80%;
+  padding: 1rem;
+  margin-top: 2rem;
+  margin-left: 3rem;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+}
+
+.page .profile form button {
+  font-size: 1.5rem;
+  color: #fff;
+  width: 18rem;
+  background: #2d7ad4;
+  border: none;
+  height: 4rem;
+  margin-top: 1.5rem;
+  margin-left: 8rem;
+  border-radius: 8px;
+}
+
+.page .profile form span {
+  color: red;
+  text-align: center;
+  margin-top: 1rem;
+  text-decoration: underline;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.page .card {
+  background: #d9eaff;
+  height: 14rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 32px 10%;
+  height: 16rem;
+}
+
+.page .card .search {
+  margin-left: 4rem;
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.page .card .search p {
+  font-size: 2.2rem;
+  font-weight: bold;
+}
+
+.page .card .search input {
+  margin-top: 1.5rem;
+  width: 50%;
+  padding: 0px 32px;
+  border-radius: 120px;
+  border: 1px solid #ccc;
+  line-height: 50px;
+  font-size: 16px;
+}
+
+.page .card .filter {
+  margin-right: 1rem;
+  margin-top: 1rem;
+  z-index: 100000;
+}
+
+.page .card .filter button {
+  height: 5rem;
+  width: 10rem;
+  background: #fff;
+  border-radius: 32px;
+}
+
+.page .card .filter button i {
+  font-size: 2rem;
+  padding: 0px 5px;
+}
+
+.page .container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(30rem, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.page .container .box {
+  padding: 3rem 2rem;
+  background: #fff;
+  outline: 0.1rem solid rgba(0, 0, 0, 0.1);
+  outline-offset: -1rem;
+  text-align: center;
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+}
+
+.page .container .box img {
+  width: 25rem;
+  height: 25rem;
+  object-fit: contain;
+}
+
+.page .container .box h3 {
+  font-size: 2.5rem;
+  line-height: 1.8;
+  color: #2d7ad4;
+}
+
+.page .container .box p {
+  font-size: 1.5rem;
+}
+
+.page .container .box span {
+  color: #007bff;
+}
+
+.page .container .box i {
+  margin-top: 1rem;
+  font-size: 2.5rem;
+}
+
+.product-card {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.card-content {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  text-align: center;
+}
+
+.card-content img {
+  width: 25rem;
+  height: 25rem;
+  object-fit: contain;
+}
+
+.card-content h3 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.card-content p {
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.card-content button {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 1rem;
+}
+
+.card-content p {
+  font-size: 1.5rem;
+}
+
+.card-content span {
+  color: #007bff;
+}
+
+.card-content button a {
+  font-size: 16px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.filter-card {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  margin-top: 3rem;
+  padding: 10px;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+}
+
+.filter-card .btn {
+  background: #007bff;
+}
+
+.page .top_card {
+  background: #D9EAFF;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  height: 15rem;
+  width: 100%;
+  margin-top: 3rem;
+  margin-bottom: 2rem;
+}
+
+.page .top_card h3 {
+  line-height: 14rem;
+  font-size: 5rem;
+}
+
+.table-row {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 1.5rem 30%;
+  height: 5rem;
+  border-bottom: 1px solid black;
+  text-align: center;
+}
+
+.table-row p {
+  line-height: 2rem;
+  margin-bottom: -1rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* Media Queries for Responsiveness */
+
+@media (max-width: 768px) {
+  html{
+    overflow-x: hidden;
+    font-size: 7px;
+  }
+  .header {
+    padding: 1rem 5%;
+    display: flex;
+    height: auto;
+    flex-direction: column;
+    align-items: center;
+  }
+  .fa-bars{
+    display: block;
+    margin: 1% 90% 1% 0%;
+    
+  }
+
+  .header .Links a {
+    padding: 1rem;
+    display:  none ;
+    flex-direction: column;
+  }
+  .header .buttons{
+    display: none;
+    flex-direction: column;
+  }
+  .page .card{
+    margin-top: 2rem;
+    height: 35rem;
+    overflow-y: hidden;
+  }
+  .page .card .search p{
+    font-weight: 200;
+    font-size: 16px;
+  }  
+  .page .card .search input{
+    width: 30rem;
+  }
+  .page .card .filter{
+    margin-left: 1.5rem;
+  }
+  .form,
+  .page .profile form {
+    width: 35rem;
+  }
+  
+  .form input,
+  .page .profile form input {
+    width: 90%;
+  }
+
+  .form button,
+  .page .profile form button {
+    margin-left: 0rem;
+  }
+
+  .page .container .box {
+    padding: 2rem;
+  }
+}
