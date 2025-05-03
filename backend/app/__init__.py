@@ -8,7 +8,8 @@ from flask_migrate import Migrate  # Import Flask-Migrate
 # Extensions
 jwt = JWTManager()
 db = SQLAlchemy()
-migrate = Migrate()  # Initialize Migrate extension
+migrate = Migrate() 
+migrate.init_app(app, db)   # Initialize Migrate extension
 
 def create_app():
     app = Flask(__name__)
