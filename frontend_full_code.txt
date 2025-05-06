@@ -1,0 +1,1120 @@
+=== PROJECT STRUCTURE ===
+src
+├── App.css
+├── App.jsx
+├── components
+│   ├── LoginForm.jsx
+│   ├── Navbar.jsx
+│   ├── ProductCard.jsx
+│   ├── ProductFilter.jsx
+│   ├── ProductList.jsx
+│   ├── SearchBar.jsx
+│   └── SignupForm.jsx
+├── db.json
+├── main.jsx
+├── page
+│   ├── History.jsx
+│   ├── Home.jsx
+│   ├── Product.jsx
+│   └── Profile.jsx
+└── store
+    ├── Actions.jsx
+    ├── Footer.jsx
+    ├── LandingPage.css
+    └── LandingPage.jsx
+
+4 directories, 19 files
+\n=== PACKAGE.JSON ===
+{
+  "name": "bluecart-marketplace",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@testing-library/jest-dom": "^6.1.4",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/user-event": "^14.5.1",
+    "axios": "^1.9.0",
+    "json-server": "^0.17.4",
+    "jsonwebtoken": "^9.0.2",
+    "react": "^18.2.0",
+    "react-auth-kit": "^2.12.7",
+    "react-dom": "^18.2.0",
+    "react-redux": "^8.1.3",
+    "react-responsive-carousel": "^3.2.23",
+    "react-router-dom": "^6.17.0",
+    "redux": "^4.2.1",
+    "sweetalert2": "^11.9.0",
+    "sweetalert2-react-content": "^5.0.7"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "@vitejs/plugin-react-swc": "^3.3.2",
+    "eslint": "^8.45.0",
+    "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.3",
+    "jest": "^29.7.0",
+    "vite": "^4.4.5"
+  }
+}
+\n=== VITE CONFIG ===
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react-swc'
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [react()],
+})
+\n=== REACT ENTRY POINT ===
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.jsx'
+
+
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <App />
+  
+  </React.StrictMode>,
+)
+\n=== APP COMPONENT ===
+import { useState } from 'react'
+import './App.css'
+import Navbar from './components/Navbar'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Product from './page/Product'
+import Profile from './page/Profile'
+import History from './page/History'
+import LandingPage from './store/LandingPage'
+import { AuthProvider, RequireAuth } from 'react-auth-kit'
+import SearchBar from './components/SearchBar'
+import ProductList from './components/ProductList'
+
+function App() {
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+
+  const handleSearch = async (query) => {
+    setLoading(true)
+    setError(null)
+    try {
+      const response = await fetch(`http://localhost:5000/products/search?q=${encodeURIComponent(query)}`)
+      if (!response.ok) throw new Error('Failed to fetch products')
+      const data = await response.json()
+      setProducts(data)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <AuthProvider
+      authType='cookie'
+      authName='_auth'
+      cookieDomain={window.location.hostname}
+      cookieSecure={false}
+    >
+      <BrowserRouter>
+        <Navbar />
+        <SearchBar onSearch={handleSearch} />
+        {loading && <p style={{ textAlign: 'center' }}>Loading...</p>}
+        {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
+        <ProductList products={products} />
+
+        <Routes>
+          <Route exact path='/' element={<LandingPage />} />
+          <Route
+            exact
+            path='/history'
+            element={
+              <RequireAuth loginPath='/'>
+                <History />
+              </RequireAuth>
+            }
+          />
+          <Route exact path='/product' element={<Product />} />
+          <Route
+            exact
+            path='/profile'
+            element={
+              <RequireAuth loginPath='/'>
+                <Profile />
+              </RequireAuth>
+            }
+          />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+  )
+}
+
+export default App
+\n=== ALL COMPONENTS ===
+
+=== src/components/ProductFilter.jsx ===
+import React, { useEffect, useState } from 'react';
+
+function ProductFilter({ onFilterChange }) {
+  const [filter, setFilter] = useState('Price')
+  useEffect(()=>{
+    onFilterChange(filter);
+  }, [filter])
+
+  return (
+    <div className="filter-card">
+      <label>Filter by: {filter}</label>
+      <button className='btn' onClick={ () => setFilter('Price') }>Price</button>
+      <button className='btn' onClick={ () => setFilter('Review') }>Review</button>
+      <button className='btn' onClick={ () => setFilter('Rating') }>Rating</button>
+    </div>
+  );
+}
+
+export default ProductFilter;
+=== src/components/ProductCard.jsx ===
+import React from 'react';
+
+function ProductCard({ product, onClose }) {
+  const getIconForUrl = (url) => {
+    if (url) {
+      if (url.includes('amazon')) {
+        return ' on Amazon';
+      } else if (url.includes('ebay')) {
+        return ' on eBay';
+      } else if (url.includes('walmart')) {
+        return ' on Walmart';
+      }else if(url.includes('aliexpress')) {
+        return ' on Alibaba'
+      }else{
+        return " "
+      }
+    }
+
+    return 'Unknown Platform';
+  };
+
+  return (
+    <div className="product-card">
+      <div className="card-content">
+        <img src={product.image} alt={product.name} />
+        <p>{product.name}</p>
+        <p>Price <span>{product.price}</span></p>
+        <button>
+          <a href={product.link} target="_blank" rel="noopener noreferrer">
+            Buy{getIconForUrl(product.link)}
+          </a>
+        </button>
+
+        <button onClick={onClose}>Close</button>
+      </div>
+    </div>
+  );
+}
+
+export default ProductCard;
+
+=== src/components/SearchBar.jsx ===
+// src/components/SearchBar.jsx
+import React, { useState } from 'react';
+
+const SearchBar = ({ onSearch }) => {
+  const [query, setQuery] = useState('');
+
+  const handleSearch = () => {
+    onSearch(query);
+  };
+
+  return (
+    <div>
+      <input
+        type="text"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search for products..."
+      />
+      <button onClick={handleSearch}>Search</button>
+    </div>
+  );
+};
+
+export default SearchBar;
+
+=== src/components/ProductList.jsx ===
+import React from 'react';
+import PropTypes from 'prop-types';
+
+const ProductList = ({ products }) => {
+  if (!products || products.length === 0) {
+    return <div className="no-products">No products found. Try a different search.</div>;
+  }
+
+  return (
+    <div className="product-list-container">
+      <h2 className="product-list-title">Search Results</h2>
+      <div className="product-grid">
+        {products.map((product) => (
+          <div key={`${product.name}-${product.shop}`} className="product-card">
+            <div className="product-header">
+              <h3 className="product-name">{product.name}</h3>
+              <img 
+                src={`/assets/${product.shop}.png`} 
+                alt={product.shop} 
+                className="shop-logo"
+              />
+            </div>
+            
+            <div className="product-details">
+              <p className="product-price">
+                <strong>Price:</strong> KSh {product.price.toLocaleString()}
+              </p>
+              <p className="product-rating">
+                <strong>Rating:</strong> {product.rating} ★ ({product.rating_count} reviews)
+              </p>
+              <p className="delivery-cost">
+                <strong>Delivery:</strong> KSh {product.delivery_cost}
+              </p>
+              <p className="payment-mode">
+                <strong>Payment:</strong> {product.payment_mode}
+              </p>
+              {product.marginal_benefit && (
+                <p className="mb-score">
+                  <strong>MB Score:</strong> {product.marginal_benefit.toFixed(2)}
+                </p>
+              )}
+              {product.cost_benefit && (
+                <p className="cb-score">
+                  <strong>Value Score:</strong> {product.cost_benefit.toFixed(2)}
+                </p>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+ProductList.propTypes = {
+  products: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      shop: PropTypes.string.isRequired,
+      price: PropTypes.number.isRequired,
+      rating: PropTypes.number,
+      rating_count: PropTypes.number,
+      delivery_cost: PropTypes.number,
+      payment_mode: PropTypes.string,
+      marginal_benefit: PropTypes.number,
+      cost_benefit: PropTypes.number
+    })
+  ).isRequired
+};
+
+export default ProductList;
+=== src/components/Navbar.jsx ===
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import LoginForm from './LoginForm'; 
+import SignupForm from './SignupForm'; 
+
+
+function Navbar() {
+  const [showLoginForm, setShowLoginForm] = useState(false);
+  const [showSignupForm, setShowSignupForm] = useState(false);
+
+  const toggleLoginForm = () => {
+    setShowLoginForm(!showLoginForm);
+    setShowSignupForm(false)
+  };
+
+  const toggleSignupForm = () => {
+    setShowSignupForm(!showSignupForm);
+    setShowLoginForm(false)
+  };
+  const [isNavigationVisible, setNavigationVisibility] = useState(false);
+
+  const handleHamburgerClick = () => {
+    setNavigationVisibility(!isNavigationVisible);
+  };
+  return (
+    <div className='header'>
+      <div className="logo">
+        <i className="fa-solid fa-cart-shopping"></i>
+        <span>Blue Cart</span>
+      </div>
+      <div className='Links'>
+        <Link to='/'>Home</Link>
+        <Link to='/product'>Product</Link>
+        <Link to='/profile'>Profile</Link>
+        <Link to='/history'>History</Link>
+      </div>
+      <i className="fa-solid fa-bars" onClick={handleHamburgerClick}></i>
+      <div className={`hamburger ${isNavigationVisible ? 'show' : ''}`}>
+        <Link to='/'>Home</Link>
+        <Link to='/product'>Product</Link>
+        <Link to='/profile'>Profile</Link>
+        <Link to='/history'>History</Link>
+
+        <button onClick={toggleLoginForm}>Login</button>
+        <button onClick={toggleSignupForm}>Sign Up</button>
+      </div>
+      <div className="buttons">
+        <button onClick={toggleLoginForm}>Login</button>
+        <button onClick={toggleSignupForm}>Sign Up</button>
+      </div>
+      {showSignupForm && <SignupForm onClose={toggleSignupForm} onOpen={toggleLoginForm}/>}
+      {showLoginForm && <LoginForm onClose={toggleLoginForm} onOpen={toggleSignupForm}/>}
+    </div>
+  );
+}
+
+export default Navbar;
+
+=== src/components/LoginForm.jsx ===
+import React, { useState } from 'react';
+import Swal from 'sweetalert2';
+import { useSignIn } from 'react-auth-kit';
+import { useNavigate } from 'react-router-dom';
+
+function LoginForm({ onClose, onOpen }) {
+  const signIn = useSignIn();
+  const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const toggleForm = () => {
+    setIsOpen(!isOpen);
+    if (onClose) {
+      onClose();
+    }
+  };
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+  };
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    const loginData = {
+      email,
+      password,
+    };
+
+    try {
+      const response = await fetch('https://bluecart-api.onrender.com/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(loginData),
+      });
+
+      if (response.status === 200) {
+        try {
+          const data = await response.json();
+
+          if (data.access_token) {
+            localStorage.setItem('access_token', data.access_token);
+
+            signIn({
+              token: data.access_token,
+              expiresIn: 1800,
+              tokenType: 'Bearer',
+            });
+
+            Swal.fire({
+              icon: 'success',
+              title: 'Login Successful',
+              text: 'You have successfully logged in.',
+            });
+
+            // Close the card upon successful login
+            toggleForm();
+
+            navigate('/');
+          } else {
+            console.error('Invalid token in the response data:', data);
+            Swal.fire({
+              icon: 'error',
+              title: 'Login Failed',
+              text: 'Invalid response data. Please try again.',
+            });
+          }
+        } catch (jsonError) {
+          console.error('JSON parsing error:', jsonError);
+          Swal.fire({
+            icon: 'error',
+            title: 'Login Failed',
+            text: 'Invalid response data. Please try again.',
+          });
+        }
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Login Failed',
+          text: 'Invalid email or password. Please try again.',
+        });
+      }
+    } catch (error) {
+      console.error('Login Error:', error);
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'An error occurred during login. Please try again later.',
+      });
+    }
+  };
+
+  return (
+    <div className={`form form2 ${isOpen ? 'open' : 'closed'}`}>
+      <form onSubmit={handleLogin}>
+        <h3>Blue MarketPlace</h3>
+        <input type="email" placeholder="email" value={email} onChange={handleEmailChange} />
+        <input type="password" placeholder="password" value={password} onChange={handlePasswordChange} />
+        <p>
+          I do not have an account? <span onClick={onOpen}>Signup</span>
+        </p>
+        <button type="submit">Login</button>
+      </form>
+      <style>
+        {`
+          input[type="text"],
+          input[type="email"],
+          input[type="password"] {
+            text-transform: none;
+          }
+        `}
+      </style>
+    </div>
+  );
+}
+
+export default LoginForm;
+
+=== src/components/SignupForm.jsx ===
+import React, { useState } from 'react';
+import Swal from 'sweetalert2'; 
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
+
+function SignupForm({ onClose , onOpen}) {
+  const [isOpen, setIsOpen] = useState(true);
+
+  const toggleForm = () => {
+    setIsOpen(!isOpen);
+    if (onClose) {
+      onClose();
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const username = document.getElementById('username').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    if (password !== confirmPassword) {
+      MySwal.fire({
+        icon: 'error',
+        title: 'Passwords do not match',
+      });
+      return;
+    }
+
+    const userData = {
+      username: username,
+      email: email,
+      password: password,
+    };
+
+    console.log('Submitting user data:', userData);
+
+    fetch('https://bluecart-api.onrender.com/auth/register', {
+
+
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userData),
+    })
+      .then((response) => {
+        console.log('Response status:', response.status);
+        console.log('Response OK:', response.ok);
+
+        if (response.status === 201) {
+          MySwal.fire({
+            icon: 'success',
+            title: 'Registration successful',
+          });
+        } else {
+          MySwal.fire({
+            icon: 'error',
+            title: 'Registration failed',
+          });
+        }
+      })
+      .catch((error) => {
+        console.error('Error during registration:', error);
+        MySwal.fire({
+          icon: 'error',
+          title: 'An error occurred during registration',
+        });
+      });
+  };
+
+  return (
+    <div className={`form ${isOpen ? 'open' : 'closed'}`}>
+      <h3>Blue MarketPlace</h3>
+      <form onSubmit={handleSubmit}>
+        <input type="text" id="username" placeholder="Username" required />
+        <input type="email" id="email" placeholder="Email" required />
+        <input
+          type="password"
+          id="password"
+          required
+          placeholder="Enter password"
+        />
+        <input
+          type="password"
+          id="confirmPassword"
+          required
+          placeholder="Confirm password"
+        />
+        <button type="submit">Sign Up</button>
+        <p>
+          Already have an account? <span onClick={onOpen}>Log In</span>
+        </p>
+      </form>
+      <style>
+        {`
+          input[type="text"],
+          input[type="email"],
+          input[type="password"] {
+            text-transform: none; /* Remove default capitalization */
+          }
+        `}
+      </style>
+    </div>
+  );
+}
+
+export default SignupForm;
+\n=== PAGES ===
+
+=== src/page/Product.jsx ===
+import React, { useState, useEffect } from 'react';
+import ProductCard from '../components/ProductCard';
+import ProductFilter from '../components/ProductFilter';
+import {useAuthHeader} from 'react-auth-kit'
+
+function Product() {
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [searchQuery, setSearchQuery] = useState(localStorage.getItem('searchQuery') || '');
+  const [data, setData] = useState([]);
+  const [showCard, setShowCard] = useState(false);
+  const [filterType, setFilterType] = useState(null);
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const authHeader = useAuthHeader()
+
+  useEffect(() => {
+    fetchData();
+  }, [searchQuery]);
+
+  function fetchData() {
+    if (searchQuery !== "") {
+      const requestBody = JSON.stringify({ query: searchQuery });
+      // const token = localStorage.getItem('access_token');
+      let headers = {}
+
+      // if (token) {
+      //   headers = {
+      //     "Content-Type": "application/json",
+      //     "Authorization": `Bearer ${token}`,
+      //   }
+      // } else {
+      //   headers = {
+      //     "Content-Type": "application/json",
+      //   }
+      // }
+
+      if (authHeader() != '') {
+        headers = {
+          "Content-Type": "application/json",
+          "Authorization": `${authHeader()}`,
+        }
+      } else {
+        headers = {
+          "Content-Type": "application/json",
+        }
+      }
+
+      fetch("https://bluecart-api.onrender.com/search", {
+        method: "POST",
+        headers: headers,
+        body: requestBody,
+      })
+        .then((response) => {
+          if (response.ok){
+            return response.json()
+          }else{
+            return []
+          }
+        })
+        .then((responseData) => setData(responseData))
+        .catch((error) => console.error('Error fetching data:', error));
+    }
+  }
+
+  const openProductCard = (product) => {
+    setSelectedProduct(product);
+    setShowCard(true);
+  };
+
+  const closeProductCard = () => {
+    setSelectedProduct(null);
+    setShowCard(false);
+  };
+
+  const handleSearch = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const getIconForUrl = (url) => {
+    if (url) {
+      if (url.includes('amazon')) {
+        return 'fa-brands fa-amazon';
+      } else if (url.includes('ebay')) {
+        return 'fa-brands fa-ebay';
+      } else if (url.includes('alibaba')) {
+        return '';
+      }
+    }
+
+    return 'default-icon.png';
+  };
+
+  const handleFilter = (newFilterType) => {
+    setFilterType(newFilterType);
+    if (data.length > 1) {
+      let products = []
+      switch (newFilterType) {
+
+        case 'Price':
+          products = [...data].sort((a, b) => {
+            const priceA = parseFloat(a.price);
+            const priceB = parseFloat(b.price);
+            return priceA - priceB;
+          });
+          setData(products)
+          break;
+
+        case 'Review':
+          products = [...data].sort((a, b) => {
+            const reviewA = parseInt(a.review);
+            const reviewB = parseInt(b.review);
+            return reviewB - reviewA;
+          });
+          setData(products)
+          break;
+
+        case 'Rating':
+          products = [...data].sort((a, b) => {
+            const ratingA = parseFloat(a.rating);
+            const ratingB = parseFloat(b.rating);
+            return ratingB - ratingA;
+          });
+          setData(products)
+          break;
+
+        default:
+          products = [...data].sort((a, b) => {
+            const priceA = parseFloat(a.price);
+            const priceB = parseFloat(b.price);
+            return priceA - priceB;
+          });
+          setData(products)
+          break;
+      }
+    }
+  };
+
+  const toggleFilterDropdown = () => {
+    setShowFilterDropdown(!showFilterDropdown);
+  };
+
+  return (
+    <div className={`page ${showCard ? 'fade' : ''}`}>
+      <div className="card">
+        <div className="search">
+          <p>Millions of products across multiple categories for all your shopping needs</p>
+          <input
+            type="text"
+            placeholder="Search here for your products ..."
+            value={searchQuery}
+            onChange={handleSearch}
+          />
+        </div>
+        <div className="filter">
+          <button onClick={toggleFilterDropdown}>
+            <i className="fas fa-sort"></i> Filter
+          </button>
+          {showFilterDropdown && <ProductFilter onFilterChange={handleFilter} />}
+        </div>
+      </div>
+      <div className="container">
+        {data.map((item, index) => (
+          <div className="box" key={index} onClick={() => openProductCard(item)}>
+            <img src={item.image} alt="" />
+            <p>{item.name}</p>
+            <br />
+            <p>Price <span>{item.price}</span></p>
+            <br />
+            <p>Rating <span>{item.rating}</span></p>
+            <br />
+            <i className={getIconForUrl(item.link)}></i>
+          </div>
+        ))}
+      </div>
+      {selectedProduct && (
+        <ProductCard product={selectedProduct} onClose={closeProductCard} />
+      )}
+      <style>
+        {`
+          input[type="text"],
+          input[type="email"],
+          input[type="password"] {
+            text-transform: none;
+          }
+        `}
+      </style>
+    </div>
+  );
+}
+
+export default Product;
+
+=== src/page/Home.jsx ===
+import React from 'react'
+
+
+function Home() {
+  return (
+    <div>Home</div>
+  )
+}
+
+export default Home;
+=== src/page/Profile.jsx ===
+import React, { useEffect, useState } from 'react';
+import {useAuthHeader} from 'react-auth-kit'
+import {useSignOut} from 'react-auth-kit';
+
+function Profile() {
+  const authHeader = useAuthHeader()
+  const signOut = useSignOut()
+
+  const handleDeleteAccount = async () => {
+    const deleteApiUrl = 'https://bluecart-api.onrender.com/profile';
+    // const token = localStorage.getItem('access_token');
+
+    if (authHeader() == '') {
+      alert('You need to be logged in to delete your account.');
+      return;
+    }
+
+    try {
+      const response = await fetch(deleteApiUrl, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          "Authorization": `${authHeader()}`,
+        },
+      });
+
+      if (response.ok) {
+        // localStorage.removeItem('token');
+        signOut()
+        alert('Account deleted successfully.');
+
+      } else {
+        const errorData = await response.json();
+        console.error('Error response data:', errorData);
+        alert(`Failed to delete account. Error: ${errorData.message}`);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('An error occurred while deleting the account. Please try again.');
+    }
+  };
+
+  const [userData, setUserData] = useState('');
+
+  useEffect(() => {
+    // const token = localStorage.getItem('access_token');
+    if (authHeader() != '') {
+      upDate();
+    }
+  }, []);
+
+  const upDate = () => {
+    fetch('https://bluecart-api.onrender.com/profile', {
+      headers: {
+        "Authorization": `${authHeader()}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => setUserData(data));
+  };
+
+  const handleUpdateProfile = async (e) => {
+    e.preventDefault();
+    const updateApiUrl = 'https://bluecart-api.onrender.com/profile';
+    // const token = localStorage.getItem('access_token');
+    if (authHeader() == '') {
+      alert('You need to be logged in to update your profile.');
+      return;
+    }
+    const { username, newPassword, confirmNewPassword } = e.target.elements;
+    if (newPassword && newPassword.value !== confirmNewPassword.value) {
+      alert('New password and confirm password do not match.');
+      return;
+    }
+
+    const requestData = {
+      username: username.value,
+      password: newPassword.value,
+    };
+
+    try {
+      const response = await fetch(updateApiUrl, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          "Authorization": `${authHeader()}`,
+        },
+        body: JSON.stringify(requestData),
+      });
+
+      if (response.ok) {
+        alert('Profile updated successfully.');
+        upDate();
+      } else {
+        const errorData = await response.json();
+        console.error('Error response data:', errorData);
+        alert(`Failed to update profile. Error: ${errorData.message}`);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('An error occurred while updating the profile. Please try again.');
+    }
+  };
+
+  return (
+    <div className='page'>
+    <div className="profile">
+      <h3>Profile Settings</h3>
+      <form onSubmit={handleUpdateProfile}>
+        <input type="text" name="username" placeholder='Username' value={userData.username} />
+        <input type="email" placeholder='Email' value={userData.email} disabled />
+        <input type="password" placeholder='Old Password' value={userData.password} disabled />
+        <input type="password" name="newPassword" placeholder='New Password' />
+        <input type="password" name="confirmNewPassword" placeholder='Confirm Password' />
+        <button type="submit">Update Profile</button>
+        <span onClick={handleDeleteAccount}>Delete Account</span>
+      </form>
+      
+    </div>
+    <style>
+      {`
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+          text-transform: none; /* Remove default capitalization */
+        }
+      `}
+    </style>
+  </div>
+  );
+}
+
+export default Profile;
+
+=== src/page/History.jsx ===
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {useAuthHeader} from 'react-auth-kit'
+
+function History() {
+  const [history, setHistory] = useState([]);
+  const navigate=useNavigate()
+  const authHeader = useAuthHeader()
+
+  useEffect(() => {
+    // const token = localStorage.getItem('access_token');
+    // console.log(token);
+    // if (token) {
+    //   fetchHistory(token);
+    // }
+    if(authHeader() != ''){
+      fetchHistory()
+    }
+  }, []);
+
+  const fetchHistory = () => {
+    fetch('https://bluecart-api.onrender.com/history', {
+      headers: {
+        "Authorization": `${authHeader()}`,
+      }
+    })
+      .then((res) => res.json())
+      .then((data) => setHistory(data));
+  };
+
+  const handleItemClick = (query) => {
+    localStorage.setItem('searchQuery',query);
+    navigate('/product')
+  };
+
+  console.log(history);
+
+  return (
+    <div className="page">
+      <div className="top_card">
+        <h3>Recent Searches</h3>
+      </div>
+      <div className='table-box'>
+        {history.map((item, index) => (
+          <div key={index} className="table-row">
+            <p onClick={() => handleItemClick(item.name)}>{item.name}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default History;
+\n=== STORE ===
+
+=== src/store/Footer.jsx ===
+import React from "react";
+
+function Footer() {
+    return (
+        <div className="footer">
+            <h2>Supported Sites</h2>
+            <div className="company-logos-container">
+                <div className="company-logos">
+                    <img className="logo" src="/assets/Amazon.png" alt="Company Logo 1"  />
+                    <img className="logo" src="/assets/AliExpress.png" alt="Company Logo 2" />
+                    <img className="logo" src="/assets/Walmart.png" alt="Company Logo 3" />
+                    <img className="logo" src="/assets/Shopify.png" alt="Company Logo 4" />
+                    <img className="logo" src="/assets/Ebay.png" alt="Company Logo 5" />
+                </div>
+            </div>
+            <p>&copy; 2023 Your E-commerce Store. All rights reserved.</p>
+        </div>
+    )
+}
+
+export default Footer;
+=== src/store/LandingPage.jsx ===
+import React, { useState } from "react";
+import { Carousel } from "react-responsive-carousel";
+import Footer from "./Footer";
+import "react-responsive-carousel/lib/styles/carousel.css";
+import './LandingPage.css';
+import { Link, useNavigate } from "react-router-dom";
+
+const LandingPage = () => {
+    const navigate = useNavigate()
+    const [searchQuery, setSearchQuery] = useState('');
+    // const token = localStorage.removeItem('access_token')
+
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value);
+    };
+
+    const handleSubmit =() =>{
+        const query= searchQuery
+        localStorage.setItem('searchQuery',query)
+        navigate('/product')
+    }
+
+    return (
+        <div className="page">
+            <div className="landing-page">
+                <div className="carousel-text">
+                    <h1>Discover the best deals on all popular online stores</h1>
+                    <p>Millions of products across multiple categories for all shopping needs</p>
+                    <input
+                        id="search"
+                        type="text"
+                        placeholder="Search for items and products"
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                    />
+                    <button onClick={handleSubmit} >Search</button>
+                </div>
+
+                <Carousel
+                    showArrows={true}
+                    showStatus={false}
+                    showThumbs={false}
+                    infiniteLoop={true}
+                    autoPlay={true}
+                    interval={5000}
+                >
+                    <div>
+                    <img src="/assets/pexels-cup-of-couple-6956801.png" alt="carousel-1" />
+                    </div>
+                    <div>
+                        <img src="/assets/pexels-ivan-samkov-7621012.png" alt="carousel-2" />
+                    </div>
+                    <div>
+                        <img src="/assets/pexels-sora-shimazaki-5935744.png" alt="carousel-3" />
+                    </div>
+                </Carousel>
+            </div>
+            <Footer />
+        </div>
+    );
+};
+
+export default LandingPage;
+
+=== src/store/Actions.jsx ===
+const API_BASE = "http://localhost:5000"; // Flask backend URL
+
+export const searchProducts = async (query) => {
+  const response = await fetch(`${API_BASE}/api/products/search`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query }),
+  });
+  return await response.json();
+};
